@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; direction: rtl; background-color: #f5f5f5; margin: 20px; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        h2 { color: #007bff; padding-bottom: 10px; }
+        input { width: 90%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px; margin: 5px; cursor: pointer; width: 100%; background-color: #007bff; color: white; border: none; border-radius: 5px; }
+        .error { color: red; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>تسجيل الدخول</h2>
+
+    <input type="email" id="email" placeholder="البريد الإلكتروني">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button onclick="login()">🔑 تسجيل الدخول</button>
+    <p class="error" id="errorMsg">❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!</p>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    // إعداد Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDxweauIz4QizJNJtlYw61R0MTvsvjXwng",
+        authDomain: "my-newjob-82e79.firebaseapp.com",
+        projectId: "my-newjob-82e79",
+        storageBucket: "my-newjob-82e79.appspot.com",
+        messagingSenderId: "389693962078",
+        appId: "1:389693962078:web:bc7f191e88ad167eaec1cf",
+        measurementId: "G-GV3L3X0M4F"
+    };
+
+    // تهيئة التطبيق والمصادقة
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // تسجيل الدخول
+    window.login = function () {
+        let email = document.getElementById("email").value.trim();
+        let password = document.getElementById("password").value.trim();
+        let errorMsg = document.getElementById("errorMsg");
+
+        if (!email || !password) {
+            alert("يرجى إدخال البريد الإلكتروني وكلمة المرور!");
+            return;
+        }
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                alert("✅ تسجيل الدخول ناجح!");
+                window.location.href = "index.html"; // الانتقال إلى الصفحة الرئيسية
+            })
+            .catch((error) => {
+                console.error("خطأ في تسجيل الدخول:", error.message);
+                errorMsg.style.display = "block";
+            });
+    };
+</script>
+
+</body>
+</html>
