@@ -28,24 +28,23 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
     // إعداد Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyDxweauIz4QizJNJtlYw61R0MTvsvjXwng",
-        authDomain: "my-newjob-82e79.firebaseapp.com",
-        projectId: "my-newjob-82e79",
-        storageBucket: "my-newjob-82e79.appspot.com",
-        messagingSenderId: "389693962078",
-        appId: "1:389693962078:web:bc7f191e88ad167eaec1cf",
-        measurementId: "G-GV3L3X0M4F"
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
     };
 
-    // تهيئة التطبيق والمصادقة
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    // تسجيل الدخول
-    window.login = function () {
+    window.login = async function () {
         let email = document.getElementById("email").value.trim();
         let password = document.getElementById("password").value.trim();
         let errorMsg = document.getElementById("errorMsg");
@@ -55,15 +54,23 @@
             return;
         }
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                alert("✅ تسجيل الدخول ناجح!");
-                window.location.href = "https://mahmiud344.github.io/Main/%D9%85%D9%84%D9%81_%D8%AC%D8%AF%D9%8A%D8%AF.html"; // توجيه المستخدم للصفحة الرئيسية
-            })
-            .catch((error) => {
-                console.error("خطأ في تسجيل الدخول:", error.message);
-                errorMsg.style.display = "block";
-            });
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                let role = userDoc.data().role;
+                if (role === "admin") {
+                    window.location.href = "admin.html"; // لو أدمن، يذهب إلى لوحة التحكم
+                } else {
+                    window.location.href = "index.html"; // المستخدم العادي يذهب للصفحة الرئيسية
+                }
+            }
+        } catch (error) {
+            console.error("❌ خطأ في تسجيل الدخول:", error.message);
+            errorMsg.style.display = "block";
+        }
     };
 </script>
 
